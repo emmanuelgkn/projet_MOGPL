@@ -4,9 +4,10 @@ ORIENTATIONS = ["N","E","S","O"]
 
 # dictionnaire des indentifiants lié aux orientations (0,1,2,4)
 ID_ORIENTATIONS = {d: i for i,d in enumerate(ORIENTATIONS)}
+
 # dictionnaire montrant les déplacements élémentaires 
 # des différentes orientations 
-DEPLAS = {
+DEPLA = {
     "N": (-1,0),
     "S": (1,0),
     "E": (0,1),
@@ -47,7 +48,7 @@ def croisements_valides(N, M, obstacles):
 # tout en tenant compte de la matrice des croisements
 # valides "valide"
 def peut_bouger(i,j,o,n,N,M,valide):
-    di,dj = DEPLAS[o]
+    di,dj = DEPLA[o]
     i_act = i
     j_act = j
 
@@ -55,7 +56,7 @@ def peut_bouger(i,j,o,n,N,M,valide):
         i2 = i_act + di 
         j2 = i_act + dj 
 
-        if not (0 <= i2 <= N) and (0 <= j2 <= M):
+        if not ((0 <= i2 <= N) and (0 <= j2 <= M)):
             return False, None
         
         if not valide[i2][j2]:
