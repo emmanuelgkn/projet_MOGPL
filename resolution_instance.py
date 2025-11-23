@@ -1,6 +1,6 @@
-from collections import defaultdict
+from collections import defaultdict, deque
 
-ORIENTATIONS = ["N","E","S","O"]
+ORIENTATIONS = ["nord","est","sud","ouest"]
 
 # dictionnaire des indentifiants lié aux orientations (0,1,2,4)
 ID_ORIENTATIONS = {d: i for i,d in enumerate(ORIENTATIONS)}
@@ -8,23 +8,22 @@ ID_ORIENTATIONS = {d: i for i,d in enumerate(ORIENTATIONS)}
 # dictionnaire montrant les déplacements élémentaires 
 # des différentes orientations 
 DEPLA = {
-    "N": (-1,0),
-    "S": (1,0),
-    "E": (0,1),
-    "O":(0,-1),
+    "nord": (-1,0),
+    "sud": (1,0),
+    "est": (0,1),
+    "ouest":(0,-1),
 }
 
 # fonction qui a partir d'une orientation "o"
-# donne l'orientation quand on tourne à gauche
-def tourne_gauche(o):
+# donne l'orientation quand on tourne à dir = (gauche | droite)
+def tourne(o,dir):
     ido = ID_ORIENTATIONS[o]
-    return ORIENTATIONS[(ido - 1)%4]
-
-# fonction qui a partir d'une orientation "o"
-# donne l'orientation quand on tourne à droite
-def tourne_droite(o):
-    ido = ID_ORIENTATIONS[o]
-    return ORIENTATIONS[(ido + 1)%4]
+    if dir == "gauche":
+        return ORIENTATIONS[(ido - 1)%4]
+    elif dir == "droite":
+        return ORIENTATIONS[(ido + 1)%4]
+    else:
+        print("direction incorrecte")
 
 # fonction qui retourne les croisements 
 # accecible par le robot dans la grille
@@ -54,7 +53,7 @@ def peut_bouger(i,j,o,n,N,M,valide):
 
     for _ in range(n):
         i2 = i_act + di 
-        j2 = i_act + dj 
+        j2 = j_act + dj 
 
         if not ((0 <= i2 <= N) and (0 <= j2 <= M)):
             return False, None
@@ -62,9 +61,9 @@ def peut_bouger(i,j,o,n,N,M,valide):
         if not valide[i2][j2]:
             return False, None
         
-        i2, j2 = i_act, j_act 
+        i_act, j_act = i2, j2 
 
-    return True, (i2, j2)
+    return True, (i_act, j_act)
     
 # fonction permettant de générer un graphe
 # représentant la grille de taille N * M
@@ -84,8 +83,8 @@ def generer_graphe(N,M,obstacles):
             for o in ORIENTATIONS:
                 etat = (i,j,o)
 
-                o_gauche = tourne_gauche(o)
-                o_droite = tourne_droite(o)
+                o_gauche = tourne(o,"gauche")
+                o_droite = tourne(o,"droite")
                 graphe[etat].append(((i,j,o_gauche), "G"))
                 graphe[etat].append(((i,j,o_droite), "D"))
 
@@ -99,15 +98,97 @@ def generer_graphe(N,M,obstacles):
 
     return graphe
 
-# tests
-M, N = 3, 3
-obstacles = [[0,0,0],
-             [0,0,0],
-             [0,1,0]]
-graph = generer_graphe(N,M,obstacles)
+# Tests 1
+# M, N = 3, 3
+# obstacles = [[0,0,0],
+#              [0,0,0],
+#              [0,1,0]]
+# graph = generer_graphe(N,M,obstacles)
 
-etat = (3,3,"E")
+# etat = (0,0,"est")
 
-print(f"transitions depuis {etat} :")
-for nxt, cmd in graph[etat]:
-    print(f" {cmd} -> {nxt}")
+# print(f"transitions depuis {etat} :")
+# for nxt, cmd in graph[etat]:
+#     print(f" {cmd} -> {nxt}")
+
+# fonction permettant d'effectuer un parcours en largeur de 
+# notre graphe pour trouver le plus court chemin
+def plus_court_chemin(graphe,etat_initial,cible_position):
+
+    file = deque()
+    file.append(etat_initial)
+
+    parents = {etat_initial: (None,None)}
+
+    etat_final = None
+
+    i0, j0, _ = etat_initial
+
+    if (i0,j0) == cible_position:
+        return 0, []
+    
+    while file != deque():
+        etat = file.popleft()
+        i, j, _ = etat
+
+        if (i, j) == cible_position:
+            etat_final = etat
+            break
+
+        for etat_suiv, cmd in graphe[etat]:
+            if etat_suiv not in parents:
+                parents[etat_suiv] = (etat,cmd)
+                file.append(etat_suiv)        
+    
+    if etat_final is None:
+        return -1, []
+    
+    commandes = []
+    actuel = etat_final
+
+    while True: 
+
+        prev,cmd = parents[actuel]
+
+        if prev is None:
+            break
+
+        actuel = prev
+
+        commandes.append(cmd)
+    
+    commandes.reverse()
+    temps = len(commandes)
+
+    return temps, commandes
+
+
+# tests 2
+N, M = 9, 10
+obstacles = [[0,0,0,0,0,0,1,0,0,0],
+             [0,0,0,0,0,0,0,0,1,0],
+             [0,0,0,1,0,0,0,0,0,0],
+             [0,0,1,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,1,0,0,0],
+             [0,0,0,0,0,1,0,0,0,0],
+             [0,0,0,1,1,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0,0,0],
+             [1,0,0,0,0,0,0,0,1,0]]
+
+
+
+graphe = generer_graphe(N,M,obstacles)
+
+etat_initial = (7,2,"sud")
+
+position_cible = (2,7)
+
+temps, commandes = plus_court_chemin(graphe,etat_initial,position_cible)
+
+if temps == -1:
+    print("Aucun chemin")
+    print(f"temps : {temps}")
+    print(f"commandes: {commandes}")
+else:
+    print(f"temps: {temps}")
+    print(f"commandes: {" ".join(commandes)}")
