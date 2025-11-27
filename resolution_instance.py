@@ -164,31 +164,31 @@ def plus_court_chemin(graphe,etat_initial,cible_position):
 
 
 # tests 2
-N, M = 9, 10
-obstacles = [[0,0,0,0,0,0,1,0,0,0],
-             [0,0,0,0,0,0,0,0,1,0],
-             [0,0,0,1,0,0,0,0,0,0],
-             [0,0,1,0,0,0,0,0,0,0],
-             [0,0,0,0,0,0,1,0,0,0],
-             [0,0,0,0,0,1,0,0,0,0],
-             [0,0,0,1,1,0,0,0,0,0],
-             [0,0,0,0,0,0,0,0,0,0],
-             [1,0,0,0,0,0,0,0,1,0]]
+# N, M = 9, 10
+# obstacles = [[0,0,0,0,0,0,1,0,0,0],
+#              [0,0,0,0,0,0,0,0,1,0],
+#              [0,0,0,1,0,0,0,0,0,0],
+#              [0,0,1,0,0,0,0,0,0,0],
+#              [0,0,0,0,0,0,1,0,0,0],
+#              [0,0,0,0,0,1,0,0,0,0],
+#              [0,0,0,1,1,0,0,0,0,0],
+#              [0,0,0,0,0,0,0,0,0,0],
+#              [1,0,0,0,0,0,0,0,1,0]]
 
 
 
-graphe = generer_graphe(N,M,obstacles)
+# graphe = generer_graphe(N,M,obstacles)
 
-etat_initial = (7,2,"sud")
+# etat_initial = (7,2,"sud")
 
-position_cible = (2,7)
+# position_cible = (2,7)
 
-temps, commandes = plus_court_chemin(graphe,etat_initial,position_cible)
+# temps, commandes = plus_court_chemin(graphe,etat_initial,position_cible)
 
-if temps == -1:
-    print("Aucun chemin")
-    print(f"temps : {temps}")
-    print(f"commandes: {commandes}")
-else:
-    print(f"temps: {temps}")
-    print(f"commandes: {" ".join(commandes)}")
+# if temps == -1:
+#     print("Aucun chemin")
+#     print(f"temps : {temps}")
+#     print(f"commandes: {commandes}")
+# else:
+#     print(f"temps: {temps}")
+#     print(f"commandes: {" ".join(commandes)}")

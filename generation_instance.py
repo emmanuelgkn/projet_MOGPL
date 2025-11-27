@@ -40,3 +40,49 @@ def ecriture_instances(fichier,liste_instances):
 # creation et génération instances
 # liste_instances = generation_instances(9,10,7,2,2,7,"sud",10,5)
 # ecriture_instances("instances_analyses_grille.txt",liste_instances)
+
+# lecture des instances
+def lire_fichier(file):
+        
+        liste_instances = []
+        """Lit plusieurs instances, s'arrête à '0 0'"""
+        lines = [l.strip() for l in file.readlines() if l.strip() != ""]
+        i = 0
+        n = len(lines)
+
+        while i < n:
+
+            # Lecture M N
+            N, M = map(int, lines[i].split())
+
+            # Condition de fin
+            if M == 0 and N == 0:
+                break
+
+            i += 1
+
+            # Lecture matrice
+            matrice = []
+
+            for _ in range(N):
+                row = list(map(int, lines[i].split()))
+
+                if len(row) != M:
+                    raise ValueError(f"Ligne matrice incorrecte : {lines[i]}")
+                matrice.append(row)
+                i += 1
+
+            matrice = np.array(matrice)
+
+            # Lecture paramètres
+            parts = lines[i].split()
+            if len(parts) != 5:
+                raise ValueError("Paramètres D1 D2 F1 F2 direction incorrects")
+
+            D1, D2, F1, F2 = map(int, parts[:4])
+            direction = parts[4]
+            i += 1
+            
+            liste_instances.append(((N, M),matrice,(D1, D2, F1, F2, direction)))
+
+        return liste_instances
