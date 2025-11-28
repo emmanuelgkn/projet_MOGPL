@@ -1,6 +1,8 @@
 from generation_instance import *
 from resolution_instance import *
 import random
+import time
+import matplotlib.pyplot as plt
 
 generer = False
 
@@ -40,10 +42,44 @@ print(liste_instances[0])
 print(nb_instances)
 
 # résolution des instances
+solutions = []
+tableau_des_temps = []
+liste_temps_tmp = []
+for i in range(len(liste_instances)):
+        ((N, M),matrice,(D1, D2, F1, F2, direction)) = liste_instances[i]
+        graphe = generer_graphe(N,M,matrice)
+        time_start = time.time()
+        temps, commandes = plus_court_chemin(graphe,(D1, D2,direction),(F1, F2))
+        time_end = time.time()
+        liste_temps_tmp.append(time_end-time_start)
+        if (i+1) % 10 == 0:
+             tableau_des_temps.append(liste_temps_tmp)
+             liste_temps_tmp = []
+             
+        # print(f"{temps} {" ".join(commandes)}")
+        solutions.append((temps,commandes))
 
-for inst in liste_instances:
-    ((N, M),matrice,(D1, D2, F1, F2, direction)) = inst
-    graphe = generer_graphe(N,M,matrice)
-    temps, commandes = plus_court_chemin(graphe,(D1, D2,direction),(F1, F2))
-    print(f"{temps} {" ".join(commandes)}")
+
+moyennes_ms = [np.mean(np.array(groupe) * 1000) for groupe in tableau_des_temps]
+
+tailles_instances = [10, 20, 30, 40, 50]
+
+plt.figure(figsize=(8,5))
+plt.plot(tailles_instances, moyennes_ms, marker='o')
+
+plt.title("Temps moyen de résolution sur 10 exemples en fonction de la taille des instances")
+plt.xlabel(r"Taille d'instance $N \times N$")
+plt.ylabel("Temps moyen (ms)")
+# plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+# ecriture des solution dans le fichier
+autorisation_ecriture = False
+
+if autorisation_ecriture:
+    fichier_solutions = "solution_instances_analyse_grille.txt"
+    ecrire_solutions(fichier_solutions,solutions)
+
 

@@ -86,3 +86,10 @@ def lire_fichier(file):
             liste_instances.append(((N, M),matrice,(D1, D2, F1, F2, direction)))
 
         return liste_instances
+
+def ecrire_solutions(fichier,liste_solutions):
+    with open(fichier,"w") as f:
+        for (temps,commandes) in liste_solutions:
+            f.write(f"{temps} {" ".join(commandes)}\n")
+            f.write("\n")
+    
