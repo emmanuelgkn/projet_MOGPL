@@ -1,9 +1,9 @@
 from generation_instance import *
 from resolution_instance import *
-import time as t
+import time
 import random
-
-generer = True
+import matplotlib.pyplot as plt
+generer = False
 size=(20,20)
 N,M=size
 grille=np.zeros(size,dtype=np.int64)
@@ -42,13 +42,44 @@ print(nb_instances)
 
 # résolution des instances
 
-nb_obs_actuel=-1
-for inst in liste_instances:
-    start=t.perf_counter()
-    ((N, M),matrice,(D1, D2, F1, F2, direction)) = inst
-    if nb_obs_actuel<0:
-        nb_obs_actuel=matrice.sum()
-    graphe = generer_graphe(N,M,matrice)
-    temps, commandes = plus_court_chemin(graphe,(D1, D2,direction),(F1, F2))
-    end=t.perf_counter()
-    print(f"{temps} {" ".join(commandes)}\ntemps algo  {nb_obs_actuel}")
+# résolution des instances
+solutions = []
+tableau_des_temps = []
+liste_temps_tmp = []
+for i in range(len(liste_instances)):
+        ((N, M),matrice,(D1, D2, F1, F2, direction)) = liste_instances[i]
+        graphe = generer_graphe(N,M,matrice)
+        time_start = time.time()
+        temps, commandes = plus_court_chemin(graphe,(D1, D2,direction),(F1, F2))
+        time_end = time.time()
+        liste_temps_tmp.append(time_end-time_start)
+        if (i+1) % 10 == 0:
+             tableau_des_temps.append(liste_temps_tmp)
+             liste_temps_tmp = []
+             
+        # print(f"{temps} {" ".join(commandes)}")
+        solutions.append((temps,commandes))
+
+
+moyennes_ms = [np.mean(np.array(groupe) * 1000) for groupe in tableau_des_temps]
+
+nb_obstacles = [10, 20, 30, 40, 50]
+
+plt.figure(figsize=(8,5))
+plt.plot(nb_obstacles, moyennes_ms, marker='o')
+
+plt.title("Temps moyen de résolution sur 10 exemples en fonction du nombre d'obstacles")
+plt.xlabel(r"nombre d'obstacles")
+plt.ylabel("Temps moyen (ms)")
+# plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+# ecriture des solution dans le fichier
+autorisation_ecriture = True
+
+if autorisation_ecriture:
+    fichier_solutions = "solution_instances_analyse_obstacles.txt"
+    ecrire_solutions(fichier_solutions,solutions)
+
