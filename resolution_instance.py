@@ -29,14 +29,14 @@ def tourne(o,dir):
 # accecible par le robot dans la grille
 # avec la matrice obtacles correspondant
 # aux cases de la grille 
-def croisements_valides(N, M, obstacles):
-    valide = [[True for _ in range(M+1)] for _ in range(N+1)]
+def croisements_valides(M, N, obstacles):
+    valide = [[True for _ in range(N+1)] for _ in range(M+1)]
 
-    for i in range(N+1):
-        for j in range(M+1):
+    for i in range(M+1):
+        for j in range(N+1):
             for r in (i-1,i):
                 for c in (j-1,j):
-                    if (0 <= r < N) and (0 <= c < M):
+                    if (0 <= r < M) and (0 <= c < N):
                         if obstacles[r][c] == 1:
                             valide[i][j] = False
     return valide
@@ -46,7 +46,7 @@ def croisements_valides(N, M, obstacles):
 # grille de dimention "N, M" avec une orientation "o"
 # tout en tenant compte de la matrice des croisements
 # valides "valide"
-def peut_bouger(i,j,o,n,N,M,valide):
+def peut_bouger(i,j,o,n,M,N,valide):
     di,dj = DEPLA[o]
     i_act = i
     j_act = j
@@ -55,7 +55,7 @@ def peut_bouger(i,j,o,n,N,M,valide):
         i2 = i_act + di 
         j2 = j_act + dj 
 
-        if not ((0 <= i2 <= N) and (0 <= j2 <= M)):
+        if not ((0 <= i2 <= M) and (0 <= j2 <= N)):
             return False, None
         
         if not valide[i2][j2]:
@@ -69,13 +69,13 @@ def peut_bouger(i,j,o,n,N,M,valide):
 # représentant la grille de taille N * M
 # avec la matrice obstacles correspondant
 # aux cases de la grille 
-def generer_graphe(N,M,obstacles):
+def generer_graphe(M,N,obstacles):
     graphe = defaultdict(list)
 
-    valide = croisements_valides(N,M,obstacles)
+    valide = croisements_valides(M,N,obstacles)
 
-    for i in range(N+1):
-        for j in range(M+1):
+    for i in range(M+1):
+        for j in range(N+1):
 
             if not valide[i][j]:
                 continue
@@ -89,7 +89,7 @@ def generer_graphe(N,M,obstacles):
                 graphe[etat].append(((i,j,o_droite), "D"))
 
                 for n in [1,2,3]:
-                    ok, coord = peut_bouger(i,j,o,n,N,M,valide)
+                    ok, coord = peut_bouger(i,j,o,n,M,N,valide)
                     if ok:
                         (i2,j2) = coord
                         prochain_etat = (i2,j2,o)
@@ -164,31 +164,31 @@ def plus_court_chemin(graphe,etat_initial,cible_position):
 
 
 # tests 2
-# N, M = 9, 10
-# obstacles = [[0,0,0,0,0,0,1,0,0,0],
-#              [0,0,0,0,0,0,0,0,1,0],
-#              [0,0,0,1,0,0,0,0,0,0],
-#              [0,0,1,0,0,0,0,0,0,0],
-#              [0,0,0,0,0,0,1,0,0,0],
-#              [0,0,0,0,0,1,0,0,0,0],
-#              [0,0,0,1,1,0,0,0,0,0],
-#              [0,0,0,0,0,0,0,0,0,0],
-#              [1,0,0,0,0,0,0,0,1,0]]
+M, N = 9, 10
+obstacles = [[0,0,0,0,0,0,1,0,0,0],
+             [0,0,0,0,0,0,0,0,1,0],
+             [0,0,0,1,0,0,0,0,0,0],
+             [0,0,1,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,1,0,0,0],
+             [0,0,0,0,0,1,0,0,0,0],
+             [0,0,0,1,1,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0,0,0],
+             [1,0,0,0,0,0,0,0,1,0]]
 
 
 
-# graphe = generer_graphe(N,M,obstacles)
+graphe = generer_graphe(M,N,obstacles)
 
-# etat_initial = (7,2,"sud")
+etat_initial = (7,2,"sud")
 
-# position_cible = (2,7)
+position_cible = (2,7)
 
-# temps, commandes = plus_court_chemin(graphe,etat_initial,position_cible)
+temps, commandes = plus_court_chemin(graphe,etat_initial,position_cible)
 
-# if temps == -1:
-#     print("Aucun chemin")
-#     print(f"temps : {temps}")
-#     print(f"commandes: {commandes}")
-# else:
-#     print(f"temps: {temps}")
-#     print(f"commandes: {" ".join(commandes)}")
+if temps == -1:
+    print("Aucun chemin")
+    print(f"temps : {temps}")
+    print(f"commandes: {commandes}")
+else:
+    print(f"temps: {temps}")
+    print(f"commandes: {" ".join(commandes)}")
