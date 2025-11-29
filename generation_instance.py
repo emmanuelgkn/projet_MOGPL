@@ -2,7 +2,7 @@
 # de temps de calcul de l'algorithme
 import numpy as np
 import random
-
+import os
 # fonction permettant de générer àléatoirement nb_instances
 # instances en version naive
 def generation_instances(N,M,d1,d2,f1,f2,o,nb_obstacles,nb_instances):
