@@ -12,23 +12,23 @@ if generer:
     liste_tailles = [(i,i) for i in range(10,60,10)]
 
     liste_instances = []
-    for (N,M) in liste_tailles:
+    for (M,N) in liste_tailles:
         for _ in range(10):
             # N,M,d1,d2,f1,f2,o,nb_obstacles,nb_instances
 
-            d1 = random.randint(0,N)
-            d2 = random.randint(0,M)
+            d1 = random.randint(0,M)
+            d2 = random.randint(0,N)
 
             while True:
-                f1 = random.randint(0,N)
-                f2 = random.randint(0,M)
+                f1 = random.randint(0,M)
+                f2 = random.randint(0,N)
 
                 if (f1, f2) != (d1,d2):
                     break
 
             o = random.choice(["nord","sud","est","ouest"])
             
-            liste_instances.append(generation_instances(N,M,d1,d2,f1,f2,o,N,1)[0])
+            liste_instances.append(generation_instances(M,N,d1,d2,f1,f2,o,N,1)[0])
             # print(f"{d1} {d2} {f1} {f2} {o}")
 
     ecriture_instances("instances_analyses_grille.txt",liste_instances)
@@ -46,8 +46,8 @@ solutions = []
 tableau_des_temps = []
 liste_temps_tmp = []
 for i in range(len(liste_instances)):
-        ((N, M),matrice,(D1, D2, F1, F2, direction)) = liste_instances[i]
-        graphe = generer_graphe(N,M,matrice)
+        ((M,N),matrice,(D1, D2, F1, F2, direction)) = liste_instances[i]
+        graphe = generer_graphe(M,N,matrice)
         time_start = time.time()
         temps, commandes = plus_court_chemin(graphe,(D1, D2,direction),(F1, F2))
         time_end = time.time()
