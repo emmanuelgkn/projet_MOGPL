@@ -28,13 +28,13 @@ def generer_grille_lp(M, N, P, seed=None):
 
     for i in range(M):
         m.addConstr(
-            gp.quicksum(x[i, j] for j in range(N)) <= 2 * P / M,
+            gp.quicksum(x[i, j] for j in range(N)) <= int(2 * P / M),
             name=f"max_ligne_{i}"
         )
 
     for j in range(N):
         m.addConstr(
-            gp.quicksum(x[i, j] for i in range(M)) <= 2 * P / N,
+            gp.quicksum(x[i, j] for i in range(M)) <= int(2 * P / N),
             name=f"max_col_{j}"
         )
 
@@ -66,11 +66,11 @@ def generer_grille_lp(M, N, P, seed=None):
     return coefficients, obstacles
 
 
-M, N = 9, 10
-P = 20
-c, mat = generer_grille_lp(M, N, P,seed=0)
+# M, N = 2, 2
+# P = 1
+# c, mat = generer_grille_lp(M, N, P,seed=None)
 
-print("Poids :")
-print(c)
-print("\nObstacles :")
-print(mat)
+# print("Poids :")
+# print(c)
+# print("\nObstacles :")
+# print(mat)
